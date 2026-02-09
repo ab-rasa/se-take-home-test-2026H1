@@ -1,6 +1,8 @@
 # Rasa Solution Engineer - Take Home Test - 2026H1
 Rasa Solution Engineer Applicant
 
+![RASA](https://i.imgur.com/EdAsJ5y.png)
+
 ## Preparation Instructions
 
 Your task is to work with a Retail AI Agent capable of handling money transfers and other common banking transactions.
