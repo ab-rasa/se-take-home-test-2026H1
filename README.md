@@ -172,7 +172,7 @@ Fri 8am - 9pm
 ...
 ```
 
-* Consider error handling, e.g. What if user makes up a day of the week?*
+*Consider error handling, e.g. What if user makes up a day of the week?*
 
 ## 5. Restrict your flow
 
