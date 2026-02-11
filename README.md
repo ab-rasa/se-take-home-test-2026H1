@@ -176,9 +176,9 @@ Fri 8am - 9pm
 
 ## 5. Restrict your flow
 
-Update `flow_get_store_hours` to only get triggered by an NLU intent `store_hours`, and prevent the flow from being started by the LLM Command Generator.
+Update the `flow_get_store_hours` flow to only run when the user explicitly asks for store hours through a clearly classified NLU intent, while preventing the flow from being started by the LLM Command Generator.
 
-*Explain what was done exactly to implement this.*
+*Explain exactly what was done to implement this.*
 
 ## 6. Use the End-to-end (E2E) CLI-based testing tool to test your flows. 
 
