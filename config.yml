@@ -1,0 +1,20 @@
+recipe: default.v1
+language: en
+assistant_id: se-take-home-test-2026H1
+
+pipeline:
+- name: NLUCommandAdapter
+- name: SearchReadyLLMCommandGenerator
+  llm:
+    model_group: gpt-4o
+  flow_retrieval:
+    active: false
+
+policies:
+- name: FlowPolicy
+- name: EnterpriseSearchPolicy
+  vector_store:
+    type: "faiss-server"
+    source: "./docs"
+  llm:
+    model_group: gpt-4o

@@ -1,0 +1,7 @@
+.rasa
+models
+__pycache__*
+.python-version
+.venv*
+Makefile
+settings.json

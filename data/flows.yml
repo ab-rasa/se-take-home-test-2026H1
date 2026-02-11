@@ -1,0 +1,417 @@
+flows:
+
+  flow_exchange_item:
+    name: Exchange an item
+    description: This flow supports users who want to exchange an item for a different size, color, or variant. It collects the order and item details, confirms the exchange request, and guides the user through available options or inventory status.
+    if: slots.slot_exchange_order_number is not "999"
+    run_pattern_completed: true
+    steps:
+    - id: flow_exchange_item_0_collect_slot_exchange_order_number
+      next:
+      - if: slots.slot_exchange_order_number is "ord123"
+        then: message_utter_confirm_exchange_item
+      - else: message_utter_order_number_not_found
+      description: An order number. An order number starts with three letters followed by one or more digits, with no spaces or special characters. For instance, ord123, ord456, ord555, abc909, abc123, abc12 etc...
+      collect: slot_exchange_order_number
+      utter: utter_ask_slot_exchange_order_number
+      ask_before_filling: false
+      reset_after_flow_ends: true
+      rejections:
+      - if: not slots.slot_exchange_order_number matches "^[a-zA-Z]{3}[0-9]{3}$"
+        utter: utter_valid_order_number_syntax
+      force_slot_filling: false
+    - id: message_utter_confirm_exchange_item
+      next: flow_exchange_item_2_collect_slot_reason_for_item_exchange
+      action: utter_confirm_exchange_item
+    - id: flow_exchange_item_2_collect_slot_reason_for_item_exchange
+      next: flow_exchange_item_3_utter_exchange_reason_thank_you
+      description: The reason for requesting an exchange. For example, size issue, wrong item ordered, didn't fit right, not what I expected.
+      collect: slot_reason_for_item_exchange
+      utter: utter_ask_slot_reason_for_item_exchange
+      ask_before_filling: false
+      reset_after_flow_ends: true
+      rejections: []
+      force_slot_filling: true
+    - id: flow_exchange_item_3_utter_exchange_reason_thank_you
+      next: flow_exchange_item_4_collect_slot_user_has_return_label
+      action: utter_exchange_reason_thank_you
+    - id: flow_exchange_item_4_collect_slot_user_has_return_label
+      next:
+      - if: slots.slot_user_has_return_label is "Yes"
+        then:
+        - id: flow_exchange_item_5_utter_return_item_instructions
+          next: END
+          action: utter_return_item_instructions
+      - else:
+        - id: flow_exchange_item_6_utter_email_label_return_instructions
+          next: END
+          action: utter_email_label_return_instructions
+      description: A yes or no response
+      collect: slot_user_has_return_label
+      utter: utter_ask_slot_user_has_return_label
+      ask_before_filling: true
+      reset_after_flow_ends: true
+      rejections: []
+      force_slot_filling: false
+    - id: message_utter_order_number_not_found
+      next: flow_exchange_item_8_collect_slot_speak_to_human
+      action: utter_order_number_not_found
+    - id: flow_exchange_item_8_collect_slot_speak_to_human
+      next:
+      - if: slots.slot_speak_to_human is "Yes"
+        then:
+        # - id: flow_exchange_item_9_link_pattern_human_handoff
+        #   link: pattern_human_handoff
+        - id: connect_to_specialist
+          action: utter_connect_to_specialist
+          next: hangup_call
+          
+      - else: END
+      description: A yes or no response
+      collect: slot_speak_to_human
+      utter: utter_ask_slot_speak_to_human
+      ask_before_filling: false
+      reset_after_flow_ends: true
+      rejections: []
+      force_slot_filling: false
+    - id: hangup_call
+      link: hangup_call
+
+  flow_return_item:
+    name: Return an item
+    description: This flow assists users with returning an item from a previous order. It gathers the order number and the item to be returned, asks for a return reason, and provides next steps based on the store's return policy and timeframe.
+    persisted_slots:
+    - slot_exchange_order_number
+    run_pattern_completed: true
+    steps:
+    - id: flow_return_item_0_collect_slot_order_number
+      next:
+      - if: slots.slot_order_number is "ord123"
+        then:
+        - id: flow_return_item_1_utter_acknowledge_return_request
+          next: flow_return_item_2_set_slots
+          action: utter_acknowledge_return_request
+        - id: flow_return_item_2_set_slots
+          next: flow_return_item_3_collect_slot_request_exchange_item
+          set_slots:
+          - slot_exchange_order_number: '999'
+        - id: flow_return_item_3_collect_slot_request_exchange_item
+          next:
+          - if: slots.slot_request_exchange_item is "Yes"
+            then: set_slots_slot_exchange_order_number
+          - else: message_utter_confirm_return_requested
+          description: A yes or no type response
+          collect: slot_request_exchange_item
+          utter: utter_ask_slot_request_exchange_item
+          ask_before_filling: false
+          reset_after_flow_ends: true
+          rejections: []
+          force_slot_filling: false
+        - id: set_slots_slot_exchange_order_number
+          next: flow_return_item_5_link_flow_exchange_item
+          set_slots:
+          - slot_exchange_order_number: ord123
+        - id: flow_return_item_5_link_flow_exchange_item
+          link: flow_exchange_item
+        - id: message_utter_confirm_return_requested
+          next: flow_return_item_7_collect_slot_user_has_return_label
+          action: utter_confirm_return_requested
+        - id: flow_return_item_7_collect_slot_user_has_return_label
+          next:
+          - if: slots.slot_user_has_return_label is "Yes"
+            then:
+            - id: flow_return_item_8_utter_return_item_instructions
+              next: END
+              action: utter_return_item_instructions
+          - else:
+            - id: flow_return_item_9_utter_email_label_return_instructions
+              next: END
+              action: utter_email_label_return_instructions
+          description: A yes or no response
+          collect: slot_user_has_return_label
+          utter: utter_ask_slot_user_has_return_label
+          ask_before_filling: true
+          reset_after_flow_ends: true
+          rejections: []
+          force_slot_filling: false
+      - if: "{'ord456' 'ord555'} contains slots.slot_order_number"
+        then: message_utter_unable_to_return_not_delivered
+      - else: message_utter_order_number_not_found
+      description: An order number. An order number starts with three letters, no capital letters, followed by one or more digits, with no spaces or special characters. For instance, ord123, ord456, ord555, abc909, abc123, abc12 etc...
+      collect: slot_order_number
+      utter: utter_ask_slot_order_number
+      ask_before_filling: false
+      reset_after_flow_ends: true
+      rejections:
+      - if: not slots.slot_order_number matches "^[a-zA-Z]{3}[0-9]{3}$"
+        utter: utter_valid_order_number_syntax
+      force_slot_filling: false
+    - id: message_utter_unable_to_return_not_delivered
+      next: flow_return_item_11_collect_slot_return_request_handled
+      action: utter_unable_to_return_not_delivered
+    - id: flow_return_item_11_collect_slot_return_request_handled
+      next:
+      - if: slots.slot_return_request_handled is "Yes"
+        then:
+        - id: flow_return_item_12_collect_slot_speak_to_human
+          next:
+          - if: slots.slot_speak_to_human is "Yes"
+            then: connect_to_specialist
+            # - id: flow_return_item_13_link_pattern_human_handoff
+            #   link: pattern_human_handoff
+          - else: END
+          description: A yes or no type response
+          collect: slot_speak_to_human
+          utter: utter_ask_slot_speak_to_human
+          ask_before_filling: false
+          reset_after_flow_ends: true
+          rejections: []
+          force_slot_filling: false
+      - else: END
+      description: A yes or no type response
+      collect: slot_return_request_handled
+      utter: utter_ask_slot_return_request_handled
+      ask_before_filling: true
+      reset_after_flow_ends: true
+      rejections: []
+      force_slot_filling: false
+    - id: message_utter_order_number_not_found
+      next: flow_return_item_15_collect_slot_speak_to_human
+      action: utter_order_number_not_found
+    - id: flow_return_item_15_collect_slot_speak_to_human
+      next:
+      - if: slots.slot_speak_to_human is "Yes"
+        then: connect_to_specialist
+        # - id: flow_return_item_16_link_pattern_human_handoff
+        #   link: pattern_human_handoff
+        
+      - else: END
+      description: A yes or no type response.
+      collect: slot_speak_to_human
+      utter: utter_ask_slot_speak_to_human
+      ask_before_filling: true
+      reset_after_flow_ends: true
+      rejections: []
+      force_slot_filling: false
+    - id: connect_to_specialist
+      action: utter_connect_to_specialist
+      next: hangup_call
+    - id: hangup_call
+      link: hangup_call
+
+  flow_check_order_status:
+    name: Check order status
+    description: This flow assists users in checking the status of their order. It asks for the order number and provides real-time tracking updates, delivery progress, or any known delays.
+    run_pattern_completed: true
+    steps:
+    - id: flow_check_order_status_0_collect_slot_order_number
+      next:
+      - if: slots.slot_order_number is "ord123"
+        then:
+        - id: flow_check_order_status_1_utter_order_in_transit
+          next: END
+          action: utter_order_in_transit
+      - if: slots.slot_order_number is "ord456"
+        then:
+        - id: flow_check_order_status_2_utter_order_delivered
+          next: END
+          action: utter_order_delivered
+      - if: slots.slot_order_number is "ord555"
+        then:
+        - id: flow_check_order_status_3_utter_order_delayed
+          next: END
+          action: utter_order_delayed
+      - else: message_utter_order_number_not_found
+      description: An order number. An order number starts with three letters followed by one or more digits, with no spaces or special characters. For instance, ord123, ord456, ord555, abc909, abc123, abc12 etc...
+      collect: slot_order_number
+      utter: utter_ask_slot_order_number
+      ask_before_filling: false
+      reset_after_flow_ends: true
+      rejections:
+      - if: not slots.slot_order_number matches "^[a-zA-Z]{3}[0-9]{3}$"
+        utter: utter_valid_order_number_syntax
+      force_slot_filling: false
+
+    - id: message_utter_order_number_not_found
+      action: utter_order_number_not_found
+#      next: flow_check_order_status_5_collect_slot_speak_to_human
+      next: reset_slot_order_number
+    - id: reset_slot_order_number
+      set_slots:
+      - slot_order_number: null
+      next: flow_check_order_status_0_collect_slot_order_number
+
+#    - id: flow_check_order_status_5_collect_slot_speak_to_human
+#      next:
+#      - if: slots.slot_speak_to_human is "Yes"
+#        then:
+#        - id: flow_check_order_status_6_link_pattern_human_handoff
+#          link: pattern_human_handoff
+#      - else: END
+#      description: A yes or no response
+#      collect: slot_speak_to_human
+#      utter: utter_ask_slot_speak_to_human
+#      ask_before_filling: true
+#      reset_after_flow_ends: true
+#      rejections: []
+#      force_slot_filling: false
+
+  flow_user_states_order_not_received:
+    name: Order not received
+    description: This flow is triggered when a user states they haven't received their order. It acknowledges the delay, explains that issues can occur during processing or delivery.
+    run_pattern_completed: true
+    steps:
+    - id: flow_user_states_order_not_received_0_utter_user_states_order_not_received
+      next: flow_user_states_order_not_received_1_link_flow_check_order_status
+      action: utter_user_states_order_not_received
+    - id: flow_user_states_order_not_received_1_link_flow_check_order_status
+      link: flow_check_order_status
+
+  flow_list_active_orders:
+    name: Active order numbers
+    description: Handles user requests to list their current or recent orders.
+    run_pattern_completed: true
+    steps:
+    - id: flow_list_active_orders_0_utter_list_order_numbers
+      next: END
+      action: utter_list_order_numbers
+
+  flow_get_store_hours:
+    name: Get store hours
+    description: Short flow that uses a custom action to tell the user current store hours.
+    run_pattern_completed: true
+    steps:
+    - id: flow_get_store_hours_0_utter_few_moments
+      next: flow_get_store_hours_1_action_get_store_hours
+      action: utter_few_moments
+    - id: flow_get_store_hours_1_action_get_store_hours
+      next: END
+      action: action_get_store_hours
+
+  pattern_human_handoff:
+    name: pattern_human_handoff
+    description: Conversation repair flow for switching users to a human agent if their request can't be handled
+    run_pattern_completed: true
+    steps:
+    - id: pattern_human_handoff_0_utter_human_handoff_override
+      next: hangup_call
+      action: utter_human_handoff_override
+    - id: hangup_call
+      link: hangup_call
+
+  flow_pause_subscription:
+    name: Pause subscription
+    description: This flow allows users to temporarily pause or place a hold on an active subscription or membership (such as a gym plan or recurring service). It confirms the account, gathers the preferred pause duration or reason, and informs the user of any policy details or reactivation steps.
+    persisted_slots:
+    - slot_pause_subscription
+    run_pattern_completed: true
+    steps:
+    - id: flow_pause_subscription_0_collect_slot_subscription_type
+      next: flow_pause_subscription_1_collect_slot_pause_subscription
+      description: 'A type of subscription or membership. For instance: Gym membership, Meal Kit service, Internet service, or  Subscription Boxes.'
+      collect: slot_subscription_type
+      utter: utter_ask_slot_subscription_type
+      ask_before_filling: false
+      reset_after_flow_ends: true
+      rejections: []
+      force_slot_filling: false
+    - id: flow_pause_subscription_1_collect_slot_pause_subscription
+      next:
+      - if: slots.slot_pause_subscription is "Yes"
+        then:
+        - id: flow_pause_subscription_2_utter_subscription_paused
+          next: END
+          action: utter_subscription_paused
+      - else: END
+      description: A yes or no response.
+      collect: slot_pause_subscription
+      utter: utter_ask_slot_pause_subscription
+      ask_before_filling: false
+      reset_after_flow_ends: true
+      rejections: []
+      force_slot_filling: false
+
+  pattern_session_start:
+    name: pattern_session_start
+    description: Flow for starting the conversation
+    run_pattern_completed: true
+    steps:
+    - id: pattern_session_start_0_utter_session_start
+      action: utter_session_start
+    - action: action_restart
+    nlu_trigger:
+    - intent:
+        name: session_start
+        confidence_threshold: 0.0
+
+  flow_cancel_subscription:
+    name: Cancel subscription
+    description: This flow helps users cancel an ongoing service, subscription, membership, or recurring order. It verifies the user's identity or subscription details, confirms the cancellation request, and informs the user about any final charges, remaining access, or next steps.
+    run_pattern_completed: true
+    steps:
+    - id: flow_cancel_subscription_0_collect_slot_subscription_type
+      next: flow_cancel_subscription_1_set_slots
+      description: 'A type of subscription or membership. For instance: Gym membership, Meal Kit service, Internet service, or  Subscription Boxes.'
+      collect: slot_subscription_type
+      utter: utter_ask_slot_subscription_type
+      ask_before_filling: false
+      reset_after_flow_ends: true
+      rejections: []
+      force_slot_filling: false
+    - id: flow_cancel_subscription_1_set_slots
+      next: flow_cancel_subscription_2_call_flow_pause_subscription
+      set_slots:
+      - slot_from_cancel_flow: Yes
+    - id: flow_cancel_subscription_2_call_flow_pause_subscription
+      next:
+      - if: slots.slot_pause_subscription is "No"
+        then: message_utter_check_for_promotions
+      - else: END
+      call: flow_pause_subscription
+    - id: message_utter_check_for_promotions
+      next: flow_cancel_subscription_4_action_artificial_delay
+      action: utter_check_for_promotions
+    - id: flow_cancel_subscription_4_action_artificial_delay
+      next: flow_cancel_subscription_5_collect_slot_accepted_retention_offer
+      action: action_artificial_delay
+    - id: flow_cancel_subscription_5_collect_slot_accepted_retention_offer
+      next:
+      - if: slots.slot_accepted_retention_offer is "Yes"
+        then: message_utter_send_sms_promo_text
+      - else:
+        - id: flow_cancel_subscription_6_utter_cancelled_subscription
+          next: END
+          action: utter_cancelled_subscription
+      description: A yes or no response
+      collect: slot_accepted_retention_offer
+      utter: utter_ask_slot_accepted_retention_offer
+      ask_before_filling: true
+      reset_after_flow_ends: true
+      rejections: []
+      force_slot_filling: false
+    - id: message_utter_send_sms_promo_text
+      next: flow_cancel_subscription_8_action_send_sms_promo_text
+      action: utter_send_sms_promo_text
+    - id: flow_cancel_subscription_8_action_send_sms_promo_text
+      next: flow_cancel_subscription_9_collect_slot_promo_text_received
+      action: action_send_sms_promo_text
+    - id: flow_cancel_subscription_9_collect_slot_promo_text_received
+      next:
+      - if: slots.slot_promo_text_received is "Yes"
+        then:
+        - id: flow_cancel_subscription_10_utter_sms_promo_text_received
+          next: END
+          action: utter_sms_promo_text_received
+      - else: message_utter_sms_promo_text_not_received
+      description: A yes or no response
+      collect: slot_promo_text_received
+      utter: utter_ask_slot_promo_text_received
+      ask_before_filling: true
+      reset_after_flow_ends: true
+      rejections: []
+      force_slot_filling: false
+    - id: message_utter_sms_promo_text_not_received
+      next: flow_cancel_subscription_12_link_pattern_human_handoff
+      action: utter_sms_promo_text_not_received
+    - id: flow_cancel_subscription_12_link_pattern_human_handoff
+      link: pattern_human_handoff
