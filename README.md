@@ -159,9 +159,9 @@ Sun 8am - 5pm
 
 ## 4. Update your flow
 
-Update your `flow_get_store_hours` to provide a specific day's hours of operation.
+Update your `flow_get_store_hours` to also provide a specific day's hours of operation.
 
-*Specific day's hours of operation*
+**Specific day's hours of operation**
 
 You should be able to have a conversation like this:
 ```
@@ -172,12 +172,16 @@ Fri 8am - 9pm
 ...
 ```
 
+* Consider error handling, e.g. What if user makes up a day of the week?*
+
 ## 5. Restrict your flow
 
 Update `flow_get_store_hours` to only get triggered by an NLU intent `store_hours`, and prevent the flow from being started by the LLM Command Generator.
+
+*Explain what was done exactly to implement this.*
 
 ## 6. Use the End-to-end (E2E) CLI-based testing tool to test your flows. 
 
 Your task for this step is to leverage the End-to-end (E2E) testing tool that allows you to test conversation scenarios with different pre-configured contexts, execute custom actions, verify response texts or names, and assert when slots are filled or not.
 
-Create various testing scenarios, execute them and document the results.
+*Create various testing scenarios, execute them and document the results.*
