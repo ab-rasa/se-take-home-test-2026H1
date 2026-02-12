@@ -29,16 +29,3 @@ class ActionArtificialDelay(Action):
             domain: dict) -> list:
         time.sleep(2)
         return []
-
-
-class ActionGetStoreHours(Action):
-    """Simple custom action that returns store hours."""
-    def name(self) -> str:
-        return "action_get_store_hours"
-
-    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker,
-            domain: dict) -> list:
-        dispatcher.utter_message(
-            text="Our store hours are 9 AM to 6 PM, Monday through Saturday. We're closed on Sundays."
-        )
-        return []
