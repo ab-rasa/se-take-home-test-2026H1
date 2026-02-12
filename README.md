@@ -39,6 +39,9 @@ https://rasa.com/rasa-pro-developer-edition-license-key-request
 OpenAI configuration details are available here:  
 https://rasa.com/docs/reference/config/components/llm-configuration/#openai
 
+> [!NOTE]
+> If you need an OpenAI API key, feel free to reach out and we can provide one.
+
 ## Familiarity with Rasa
 
 - **If you are already familiar with Rasa**  
