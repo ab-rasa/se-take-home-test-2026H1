@@ -276,18 +276,6 @@ flows:
       next: END
       action: utter_list_order_numbers
 
-  flow_get_store_hours:
-    name: Get store hours
-    description: Short flow that uses a custom action to tell the user current store hours.
-    run_pattern_completed: true
-    steps:
-    - id: flow_get_store_hours_0_utter_few_moments
-      next: flow_get_store_hours_1_action_get_store_hours
-      action: utter_few_moments
-    - id: flow_get_store_hours_1_action_get_store_hours
-      next: END
-      action: action_get_store_hours
-
   pattern_human_handoff:
     name: pattern_human_handoff
     description: Conversation repair flow for switching users to a human agent if their request can't be handled
