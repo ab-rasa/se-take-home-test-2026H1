@@ -21,3 +21,10 @@ model_groups:
       - provider: openai
         model: gpt-4o-mini-2024-07-18
         temperature: 0.3
+
+# MCP servers are used to define the MCP servers that are used in this assistant.
+# Uncomment this for MCP related question.
+#mcp_servers:
+#  - name: appointment-booking
+#    url: http://44.198.186.55:8000/mcp
+#    type: http
