@@ -181,7 +181,7 @@ Fri 8am - 9pm
 
 Update the `flow_get_store_hours` flow to run when the user explicitly asks for store hours through a clearly classified NLU intent with confidence at least `90%`.
 
-**BONUS POINTS** trigger the flow with an NLU intent while preventing the flow from being started by the LLM CommandGenerator.
+**BONUS POINTS**: Trigger the flow with an NLU intent while preventing the flow from being started by the LLM CommandGenerator.
 
 *Explain exactly what was done to implement this.*
 
