@@ -162,7 +162,7 @@ Sun 8am - 5pm
 
 ## 4. Update your flow
 
-Update your `flow_get_store_hours` to also provide a specific day's hours of operation.
+Update your `flow_get_store_hours` to also provide a specific day's hours of operation. The user should now be able to ask about a specific day, or see all the hours.
 
 **Specific day's hours of operation**
 
@@ -179,7 +179,9 @@ Fri 8am - 9pm
 
 ## 5. Restrict your flow
 
-Update the `flow_get_store_hours` flow to only run when the user explicitly asks for store hours through a clearly classified NLU intent, while preventing the flow from being started by the LLM Command Generator.
+Update the `flow_get_store_hours` flow to run when the user explicitly asks for store hours through a clearly classified NLU intent with confidence at least 90%.
+
+**BONUS POINTS** trigger the flow with an NLU intent while preventing the flow from being started by the LLM CommandGenerator.
 
 *Explain exactly what was done to implement this.*
 
