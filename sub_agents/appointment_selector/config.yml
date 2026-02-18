@@ -2,7 +2,7 @@
 agent:
   name: appointment_selector
   protocol: rasa
-  description: Helps users select an appointment slot for seeing a doctor.
+  description: Helps users select an appointment slot for seeing a specialist.
 
 # Core agent configuration
 #configuration:
