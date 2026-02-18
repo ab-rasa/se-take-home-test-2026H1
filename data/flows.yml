@@ -276,6 +276,28 @@ flows:
       next: END
       action: utter_list_order_numbers
 
+  flow_get_store_hours:
+    name: Get store hours
+    description: Tells the user store hours (all days or a single day) by loading data from data/store_hours.json. Uses slot_store_hours_day when the user asks for a specific day (e.g. "store hours on Friday").
+    run_pattern_completed: true
+    if: False
+    nlu_trigger:
+      - intent: store_hours
+        confidence_threshold: 0.9
+    steps:
+    - id: flow_get_store_hours_0_collect_day
+      next: flow_get_store_hours_1_action_get_store_hours
+      description: The day of the week the user is asking about, if they specified one (e.g. Monday, Friday). Use 'all' if they want all store hours.
+      collect: slot_store_hours_day
+      utter: utter_ask_slot_store_hours_day
+      ask_before_filling: false
+      reset_after_flow_ends: true
+      rejections: []
+      force_slot_filling: false
+    - id: flow_get_store_hours_1_action_get_store_hours
+      next: END
+      action: action_get_store_hours
+
   pattern_human_handoff:
     name: pattern_human_handoff
     description: Conversation repair flow for switching users to a human agent if their request can't be handled

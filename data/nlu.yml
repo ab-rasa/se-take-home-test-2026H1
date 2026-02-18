@@ -1,0 +1,33 @@
+version: "3.1"
+
+nlu:
+  - intent: store_hours
+    examples: |
+      - What are your store hours?
+      - What time do you open?
+      - What time do you close?
+      - When are you open?
+      - When do you close?
+      - What are your hours today?
+      - What are your hours on Friday?
+      - Are you open on Sunday?
+      - What time do you open on Saturday?
+      - What are your weekend hours?
+      - What are your weekday hours?
+      - What are your hours this Monday?
+      - Are you open tomorrow?
+      - What time do you close on Thursday?
+      - Can you tell me your business hours?
+      - Store hours please
+      - Opening hours?
+      - Hours of operation
+      - When does the store open on Tuesday?
+      - When does the store close on Wednesday?
+
+  - intent: internal_unused_intent
+    examples: |
+      - placeholder example one
+      - placeholder example two
+      - lorem ipsum test sentence
+      - this is a dummy training example
+      - random internal training text

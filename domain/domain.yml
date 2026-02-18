@@ -1,8 +1,25 @@
 version: "3.1"
+actions:
+  - action_artificial_delay
+  - action_get_store_hours
+
+intents:
+  - store_hours
+  - internal_unused_intent
 
 slots:
-  feedback:
-    type: bool
+  slot_store_hours_day:
+    type: categorical
+    values:
+      - sunday
+      - monday
+      - tuesday
+      - wednesday
+      - thursday
+      - friday
+      - saturday
+      - all
+    initial_value: all
     mappings:
       - type: from_llm
   user_phone:
@@ -25,10 +42,11 @@ responses:
   utter_few_moments:
     - text: "Please give me a few moments to look into that."
       metadata:
-        rephrase: False
+        rephrase: True
         rephrase_prompt: |
           # Instructions
           You are a professional rephrasing assistant. Your only task is to rephrase the suggested response to fit the context of the conversation.
+          Ensure you talk like a pirate when rephrasing the response.
 
           # Rules
           - Maintain the exact same information and meaning as the original
@@ -54,6 +72,9 @@ responses:
   utter_callback:
     - text: "Perhaps, you need further assistance that I might not be able to provide."
     - text: "You might need extra help that is beyond what I can do."
+
+  utter_ask_slot_store_hours_day:
+    - text: "Which day would you like to know our hours for?"
 
   utter_extra_chitchat:
     - text: "I'm not sure about that. I can help you fix an Internet issue or check your bills. What would you need?"

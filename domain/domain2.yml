@@ -90,7 +90,7 @@ responses:
   - text: This order shows the package marked as delivered.
   utter_order_in_transit:
   - text: This order has left the warehouse and is on its way to your delivery address. It will arrive tomorrow.
-  order_number_not_found:
+  utter_order_number_not_found:
   - text: Hmm, I couldn't find that order number.
   - text: I didn't find a match for order number {slot_order_number}.
   - text: I'm not seeing anything for order number {slot_order_number}.
